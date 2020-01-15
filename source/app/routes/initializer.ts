@@ -1,5 +1,6 @@
 import express from "express";
-import OutcomeRouter from "./outcome/OutcomeRouter";
+import FollowUpsRouter from "./followUp/FollowUpsRouter";
+import EventsRouter from "./followUp/EventsRouter";
 
 export default class RouterInitializer{
   public static initialize(app: express.Application){
@@ -11,6 +12,7 @@ export default class RouterInitializer{
       next();
     });
 
-    OutcomeRouter.initialize(app);
+    FollowUpsRouter.initialize(app);
+    EventsRouter.initialize(app);
   }
 }

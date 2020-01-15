@@ -5,15 +5,13 @@ const listEndpoints = require('express-list-endpoints');
 const options = {
   useUnifiedTopology: true,
   useNewUrlParser: true,
-  reconnectTries: Number.MAX_VALUE,
-  reconnectInterval: 500,
   connectTimeoutMS: 10000,
   keepAlive: 1,
   useCreateIndex: true,
   auth: {
     user: app.get("DATABASE_USER"),
     password: app.get("DATABASE_PASS")
-  }
+  },
 };
 
 const url = `mongodb://${app.get("DATABASE_HOSTNAME")}:${app.get("DATABASE_PORT")}/${app.get("DATABASE")}?authSource=${app.get("DATABASE")}`;
