@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
-import FollowUSchema, {IFollowUpModel} from "./Schema";
-import IFollowUp from "./Interface";
+import FollowUSchema from "./Schema";
+import IFollowUp, {IFollowUpModel} from "./Interface";
 const ModelName = 'FollowUp';
 const CollectionName = 'follow-up';
 

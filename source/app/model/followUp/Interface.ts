@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import {Document, Model, Types} from 'mongoose';
 import ObjectId = Types.ObjectId;
 
 export default interface IFollowUp extends Document {
@@ -9,6 +9,8 @@ export default interface IFollowUp extends Document {
   time: number;
   activated:Boolean;
   order:number;
+}
 
-  getFullGender(): Promise<any>
+export interface IFollowUpModel extends Model<IFollowUp> {
+  listAllActivated(followUps:[IFollowUp]): Promise<any>
 }

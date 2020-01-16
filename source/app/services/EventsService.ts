@@ -1,6 +1,6 @@
 import IResponse, {SuccessResponse, InternalServerErrorResponse, NotFoundResponse} from '../utils/responce';
 import {Types} from "mongoose";
-import FollowUpModel from "../model/followUp/model";
+import FollowUpEventModel from "../model/followUpEvent/model";
 import ObjectId = Types.ObjectId;
 import IEvent from "../model/followUpEvent/Interface";
 import IFollowUp from "../model/followUp/Interface";
@@ -8,7 +8,7 @@ import IFollowUp from "../model/followUp/Interface";
 export default class FollowUpsService {
   static async create(event: IEvent): Promise<IResponse> {
     let order;
-    let lastEventAddedOnFollowUp: IFollowUp = await FollowUpModel.findOne({"followUpId":event.followUpId}).sort({order:-1}).exec();
+    let lastEventAddedOnFollowUp: IEvent = await FollowUpEventModel.findOne({"followUpId":event.followUpId}).sort({order:-1}).exec();
 
     try {
       if (lastEventAddedOnFollowUp) {
@@ -25,13 +25,11 @@ export default class FollowUpsService {
   }
 
   static async deactivate(eventId: string): Promise<IResponse> {
-    let eventOid;
     let updateResult;
 
     try {
-      eventOid = new ObjectId(eventId);
-      let query = FollowUpModel.where("_id", eventOid);
-      updateResult = await query.update({"$set":{deactivated:false}});
+      let query = FollowUpEventModel.where("_id", new ObjectId(eventId));
+      updateResult = await query.update({"$set":{activated:false}});
     } catch (e) {
       throw new InternalServerErrorResponse();
     }

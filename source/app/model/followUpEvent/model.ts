@@ -1,12 +1,12 @@
 import * as mongoose from "mongoose";
 import EventSchema from "./Schema";
-import IEvent from "./Interface";
+import IEvent, {IEventModel} from "./Interface";
 import AutoFillEventSchema from "./autoFillEvent/Schema";
 import IAutoFill from "./autoFillEvent/Interface";
 const ModelName = 'FollowUpEvent';
-const CollectionName = 'follow-up';
+const CollectionName = 'follow-up-event';
 
-let EventsModel = mongoose.model<IEvent>(ModelName, EventSchema, CollectionName);
+let EventsModel = mongoose.model<IEvent, IEventModel>(ModelName, EventSchema, CollectionName);
 
 EventsModel.discriminator<IAutoFill>('ActivityAutoFillEvent',AutoFillEventSchema);
 

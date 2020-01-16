@@ -2,6 +2,7 @@ import IResponse, {SuccessResponse, InternalServerErrorResponse, NotFoundRespons
 import IFollowUp from "../model/followUp/Interface";
 import {Types} from "mongoose";
 import FollowUpModel from "../model/followUp/model";
+import FollowUpEventModel from "../model/followUpEvent/model.js";
 import ObjectId = Types.ObjectId;
 
 
@@ -56,6 +57,18 @@ export default class FollowUpsService {
   }
 
   static async list(): Promise<IResponse> {
-    return FollowUpModel.listAll();
+    let activatedFollowUps: [];
+    try {
+      let followUpsEvents = await FollowUpEventModel.listActivatedEventsByFollowUp();
+      activatedFollowUps = await FollowUpModel.listAllActivated(followUpsEvents);
+    } catch (e) {
+      throw new InternalServerErrorResponse()
+    }
+
+    if(activatedFollowUps.length > 0){
+      return new SuccessResponse(activatedFollowUps);
+    } else {
+      throw new NotFoundResponse()
+    }
   }
 };
