@@ -2,10 +2,10 @@
   "name": "outcomes-service",
   "version": "1.0.0",
   "description": "Node api for participant outcomes",
-  "main": "api/app.js ",
+  "main": "dist/app.js ",
   "scripts": {
     "build": "tsc",
-    "test": "api/node_modules/.bin/jest --silent"
+    "postbuild": "cp -R node_modules dist/node_modules"
   },
   "keywords": [],
   "author": "",
