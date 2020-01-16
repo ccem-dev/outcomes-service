@@ -1,5 +1,5 @@
 FROM node:10.16.1
-COPY api/. src/
+COPY /source/dist/. src/
 WORKDIR /src
 ENV MEMORY 2048
 ENV MONGO_HOSTNAME outcomes-db
