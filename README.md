@@ -1,29 +1,36 @@
-# README #
+# outcomes-service
+This project aims to carry out all activities related to outcomes and follow-up of participants.
 
-This README would normally document whatever steps are necessary to get your application up and running.
+# Build Code
+`npm run production --prefix source/`
 
-### What is this repository for? ###
+# Terraform
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## Build Image
+`terraform init terraform/build-image`
+`terraform apply terraform/build-image`
 
-### How do I get set up? ###
+## Build Container
+`terraform init terraform/run-container`
+`terraform apply terraform/run-container`
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+# !Terraform
 
-### Contribution guidelines ###
+## Build Code
+`npm run production --prefix source/`
 
-* Writing tests
-* Code review
-* Other guidelines
+## Build Image
+`docker build -t outcomes-service .`
 
-### Who do I talk to? ###
+## Build Container
+`sudo docker run -d -p 80:8080
+-e MEMORY=1024
+-e DATABASE_HOSTNAME='outcomes-db'
+-e DATABASE_POR=27017
+-e DATABASE_USER='user'
+-e DATABASE_PASS='user'
+-e DATABASE='outcomes-database'
+--name outcomes-service outcomes-service`
 
-* Repo owner or admin
-* Other community or team contact
+# Contato
+contato@otus-solutions.com.br
