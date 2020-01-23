@@ -24,6 +24,10 @@ const ParticipantEventSchema: Schema = new Schema(
       type: Boolean,
       default: true
     },
+    status:{
+      type: String,
+      default: "PENDING"
+    },
     description: {
       type: String,
       default: ""
@@ -48,7 +52,8 @@ ParticipantEventSchema.statics.getEventsByParticipant = async function (id: Obje
   return this.collection.aggregate([
       {
         $match:{
-          "participant": id
+          "participant": id,
+          "activated": true
         }
       },
       {

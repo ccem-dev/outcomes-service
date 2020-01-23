@@ -94,8 +94,9 @@ export default class FollowUpsService {
         };
 
         if (remainingDays < 0) {
-            let resultFollowUp = FollowUpModel.findOne({"order": followUp.order + 1})
+            let resultFollowUp = FollowUpModel.findOne({"order": followUp.order + 1});
             let nextFollowUp = new ParticipantEventModel(resultFollowUp);
+            await ParticipantEventsService.accomplishedEvent(id);
             await ParticipantEventsService.start(nextFollowUp)
         }
       }
@@ -116,7 +117,7 @@ export default class FollowUpsService {
     try {
       let participantEvents = await ParticipantEventModel.getEventsByParticipant(new ObjectId(id));
       let followUpsEvents = await FollowUpEventModel.listActivatedEventsByParticipant(participantEvents);
-      activatedFollowUps = await FollowUpModel.listAllActivated(followUpsEvents);
+      activatedFollowUps = await FollowUpModel.listAllActivatedByParticipant(followUpsEvents, participantEvents);
     } catch (e) {
       throw new InternalServerErrorResponse()
     }
