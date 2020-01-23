@@ -1,7 +1,6 @@
 import IResponse from '../utils/response';
 import EventsService from "../services/EventsService";
 import IEvent from "../model/followUpEvent/Interface";
-import ParticipantEventsService from "../services/ParticipantEventsService";
 
 export default class EventsController {
   static async create(event: IEvent): Promise<IResponse> {

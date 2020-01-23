@@ -1,6 +1,5 @@
 import {Schema, Types} from "mongoose";
 import ObjectId = Types.ObjectId;
-import FollowUpSchema from "../followUp/Schema";
 
 const ParticipantEventSchema: Schema = new Schema(
   {
@@ -34,6 +33,7 @@ const ParticipantEventSchema: Schema = new Schema(
     }
   },
   {
+    discriminatorKey: "objectType",
     versionKey: false
   }
 );

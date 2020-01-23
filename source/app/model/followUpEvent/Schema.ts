@@ -1,7 +1,6 @@
 import {Schema, Types} from "mongoose";
-import ObjectId = Types.ObjectId;
-import FollowUpSchema from "../followUp/Schema";
 import IParticipantEvent from "../participantEvent/Interface";
+import ObjectId = Types.ObjectId;
 
 const eventSchema = new Schema(
   {

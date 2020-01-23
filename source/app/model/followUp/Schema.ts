@@ -157,5 +157,4 @@ FollowUpSchema.statics.listAllActivated = async function (followUps: [IFollowUp]
   ).toArray()
 };
 
-
 export default FollowUpSchema;
