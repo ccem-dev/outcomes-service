@@ -1,9 +1,8 @@
-import IResponse, {SuccessResponse, InternalServerErrorResponse, NotFoundResponse} from '../utils/responce';
+import IResponse, {InternalServerErrorResponse, NotFoundResponse, SuccessResponse} from '../utils/response';
 import {Types} from "mongoose";
 import FollowUpEventModel from "../model/followUpEvent/model";
-import ObjectId = Types.ObjectId;
 import IEvent from "../model/followUpEvent/Interface";
-import IFollowUp from "../model/followUp/Interface";
+import ObjectId = Types.ObjectId;
 
 export default class FollowUpsService {
   static async create(event: IEvent): Promise<IResponse> {

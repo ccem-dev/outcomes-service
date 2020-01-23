@@ -1,7 +1,10 @@
-import {Schema, Document, Model} from "mongoose";
+import {Schema, Document, Model, Types} from "mongoose";
 import IFollowUp from "./Interface";
+import ObjectId = Types.ObjectId
+import IParticipantEvent from "../participantEvent/Interface";
 
-const FollowUSchema: Schema = new Schema(
+
+const FollowUpSchema: Schema = new Schema(
   {
     objectType: {
       type: String,
@@ -32,7 +35,11 @@ const FollowUSchema: Schema = new Schema(
   }
 );
 
-FollowUSchema.statics.listAllActivated = async function (followUps: [IFollowUp]) {
+FollowUpSchema.statics.get = async function (id: ObjectId) {
+  return this.collection.findOne({"_id": id})
+};
+
+FollowUpSchema.statics.listAllActivated = async function (followUps: [IFollowUp]) {
   return this.collection.aggregate(
     [
       {
@@ -79,4 +86,4 @@ FollowUSchema.statics.listAllActivated = async function (followUps: [IFollowUp])
   ).toArray()
 };
 
-export default FollowUSchema;
+export default FollowUpSchema;

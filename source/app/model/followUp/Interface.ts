@@ -13,4 +13,5 @@ export default interface IFollowUp extends Document {
 
 export interface IFollowUpModel extends Model<IFollowUp> {
   listAllActivated(followUps:[IFollowUp]): Promise<any>
+  get(id: ObjectId): Promise<any>
 }

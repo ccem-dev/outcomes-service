@@ -1,7 +1,7 @@
-import {Response, Request} from "express";
-import express from "express";
+import express, {Request, Response} from "express";
 import FollowUpsController from "../../controllers/FollowUpsController";
 import FollowUpModel from "../../model/followUp/model"
+
 
 export default class FollowUpsRouter {
   public static initialize(app: express.Application) {
@@ -10,6 +10,7 @@ export default class FollowUpsRouter {
     let updatePath: string = "/update";
     let deactivatePath: string = "/deactivate";
     let listPath: string = "/list";
+    let statusPath: string = "/status";
 
     app.post(basePath + addPath, async (req: Request, res: Response) => {
       try {
@@ -48,5 +49,24 @@ export default class FollowUpsRouter {
         res.status(err.code).send(err.body)
       }
     });
+
+    app.get(basePath + statusPath + "/:id", async (req: Request, res: Response) => {
+      try {
+        let result =  await FollowUpsController.getStatus(req.params.id);
+        res.status(result.code).send(result.body)
+      } catch (err) {
+        res.status(err.code).send(err.body)
+      }
+    });
+
+    app.get(basePath + listPath + "/:id", async (req: Request, res: Response) => {
+      try {
+        let result =  await FollowUpsController.listByParticipant(req.params.id);
+        res.status(result.code).send(result.body)
+      } catch (err) {
+        res.status(err.code).send(err.body)
+      }
+    });
+
   }
 };
