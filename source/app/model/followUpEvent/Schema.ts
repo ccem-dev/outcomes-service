@@ -1,6 +1,6 @@
 import {Schema, Types} from "mongoose";
+import IParticipantEvent from "../participantEvent/Interface";
 import ObjectId = Types.ObjectId;
-import FollowUSchema from "../followUp/Schema";
 
 const eventSchema = new Schema(
   {
@@ -30,6 +30,53 @@ const eventSchema = new Schema(
     versionKey: false
   }
 );
+
+eventSchema.statics.listActivatedEventsByParticipant = async function (participantEvents: [IParticipantEvent]) {
+  return this.collection.aggregate(
+    [
+      {
+        $match:{
+          "activated": true,
+        }
+      },
+      {
+        $addFields: {
+          participantEvents: {
+            $arrayElemAt: [{
+              $filter: {
+                input: participantEvents,
+                as: "participantEvent",
+                cond: {
+                  $and: [
+                    {$eq: ["$$participantEvent._id", "$_id"]}
+                  ]
+                }
+              }
+            },
+              0]
+          }
+        }
+      },
+      {
+        $addFields: {
+          "participantEvents": "$participantEvents.eventIds"
+        }
+      },
+      {
+        $sort: {
+          "followUpId": 1,
+          "order": 1
+        }
+      },
+      {
+        $group:{
+          _id:"$followUpId",
+          events:{$push:"$$ROOT"}
+        }
+      }
+    ]
+  ).toArray()
+};
 
 eventSchema.statics.listActivatedEventsByFollowUp = async function () {
   return this.collection.aggregate(

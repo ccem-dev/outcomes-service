@@ -1,4 +1,4 @@
-import IResponse from '../utils/responce';
+import IResponse from '../utils/response';
 import EventsService from "../services/EventsService";
 import IEvent from "../model/followUpEvent/Interface";
 

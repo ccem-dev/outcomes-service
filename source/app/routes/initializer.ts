@@ -1,6 +1,7 @@
 import express from "express";
 import FollowUpsRouter from "./followUp/FollowUpsRouter";
 import EventsRouter from "./followUp/EventsRouter";
+import ParticipantEventsRouter from "./followUp/ParticipantEventsRouter";
 
 export default class RouterInitializer{
   public static initialize(app: express.Application){
@@ -14,5 +15,6 @@ export default class RouterInitializer{
 
     FollowUpsRouter.initialize(app);
     EventsRouter.initialize(app);
+    ParticipantEventsRouter.initialize(app);
   }
 }
