@@ -50,15 +50,6 @@ export default class FollowUpsRouter {
       }
     });
 
-    app.get(basePath + statusPath + "/:id", async (req: Request, res: Response) => {
-      try {
-        let result =  await FollowUpsController.getStatus(req.params.id);
-        res.status(result.code).send(result.body)
-      } catch (err) {
-        res.status(err.code).send(err.body)
-      }
-    });
-
     app.get(basePath + listPath + "/:id", async (req: Request, res: Response) => {
       try {
         let result =  await FollowUpsController.listByParticipant(req.params.id);

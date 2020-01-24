@@ -84,11 +84,6 @@ FollowUpSchema.statics.listAllActivatedByParticipant = async function (followUps
         }
       },
       {
-        $addFields: {
-          "participantEvents": "$participantEvents.eventIds"
-        }
-      },
-      {
         $project: {
           "_id": 1,
           "objectType": 1,
@@ -97,7 +92,7 @@ FollowUpSchema.statics.listAllActivatedByParticipant = async function (followUps
           "windowBetween": 1,
           "time": 1,
           "order": 1,
-          "participantEvents": 1,
+          "participantEvents": { $cond: [{ $ifNull: ["$participantEvents", false] }, "$participantEvents.eventIds", []] },
           "events": {$cond: [{$ifNull: ["$events", false]}, "$events.events", []]}
         }
       },

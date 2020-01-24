@@ -12,12 +12,15 @@ export default class ParticipantEventsRouter {
     let accomplishedPath: string = "/accomplished";
 
     app.post(basePath + startPath + '/:participant', async (req: Request, res: Response) => {
-      let json = {
+      let json: any = {
         objectType: req.body.objectType,
         eventId: req.body._id,
         participant: req.params.participant,
-        activityId: req.body.activityId
       };
+
+      if (req.body.hasOwnProperty("activityId")){
+        json.activityId = req.body.activityId;
+      }
       try {
         let event = new ParticipantEventModel(json);
         let result =  await ParticipantEventsController.start(event);

@@ -9,7 +9,7 @@ export default class ParticipantEventsService {
   static async start(participantEvent: IParticipantEvent): Promise<IResponse> {
     try {
       await participantEvent.save();
-      return new SuccessResponse({id:participantEvent._id});
+      return new SuccessResponse(participantEvent);
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }
@@ -51,10 +51,10 @@ export default class ParticipantEventsService {
     }
   }
 
-  static async accomplishedEvent(id: string): Promise<IResponse> {
+  static async accomplishedEvent(id: ObjectId): Promise<IResponse> {
     let updateResult;
     try {
-      updateResult = await ParticipantEventModel.updateOne({"_id": new ObjectId(id)}, {"$set": {status: "ACCOMPLISHED"}});
+      updateResult = await ParticipantEventModel.updateOne({"eventId": id}, {"$set": {status: "ACCOMPLISHED"}});
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }

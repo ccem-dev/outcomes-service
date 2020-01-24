@@ -59,7 +59,7 @@ eventSchema.statics.listActivatedEventsByParticipant = async function (participa
       },
       {
         $addFields: {
-          "participantEvents": "$participantEvents.eventIds"
+          "participantEvents": { $cond: [{ $ifNull: ["$participantEvents", false] }, "$participantEvents.eventIds", []] }
         }
       },
       {
