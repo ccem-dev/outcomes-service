@@ -15,5 +15,6 @@ export interface IParticipantEventModel extends Model<IParticipantEvent> {
   exist(participant: ObjectId, event: ObjectId): Promise<any>
   getByEvent(id: ObjectId): Promise<any>
   getEventsByParticipant(id: ObjectId): Promise<any>
+  listAll(id: ObjectId): Promise<any>
 }
 

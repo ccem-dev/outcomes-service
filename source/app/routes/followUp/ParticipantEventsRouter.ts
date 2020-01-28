@@ -9,6 +9,7 @@ export default class ParticipantEventsRouter {
     let startPath: string = "/start";
     let searchPath: string = "/search";
     let cancelPath: string = "/cancel";
+    let listPath: string = "/listAll";
     let accomplishedPath: string = "/accomplished";
 
     app.post(basePath + startPath + '/:participant', async (req: Request, res: Response) => {
@@ -55,6 +56,15 @@ export default class ParticipantEventsRouter {
       } catch (err) {
         res.status(err.code).send(err.body)
       }
-    })
+    });
+
+    app.get(basePath + listPath + '/:id', async (req: Request, res: Response) => {
+      try {
+        let result = await ParticipantEventsController.listAll(req.params.id);
+        res.status(result.code).send(result.body);
+      } catch (err) {
+        res.status(err.code).send(err.body)
+      }
+    });
   }
 };

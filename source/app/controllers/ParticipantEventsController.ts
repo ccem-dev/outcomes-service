@@ -20,4 +20,8 @@ export default class ParticipantEventsController {
   static async accomplishedEvent(id: string): Promise<IResponse> {
     return ParticipantEventsService.accomplishedEvent(new ObjectId(id));
   }
+
+  static async listAll(id: string): Promise<IResponse> {
+    return ParticipantEventsService.listAll(new ObjectId(id));
+  }
 };

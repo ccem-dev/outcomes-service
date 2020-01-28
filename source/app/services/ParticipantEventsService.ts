@@ -37,7 +37,7 @@ export default class ParticipantEventsService {
       followUp = await ParticipantEventModel.findOne({"_id": new ObjectId(id)});
       if (followUp) {
         if (followUp.objectType == "FollowUp") {
-          updateResult = await ParticipantEventModel.updateOne({"_id": new ObjectId(id)}, {"$set": {activated: false}});
+          updateResult = await ParticipantEventModel.updateOne({"_id": followUp._id}, {"$set": {status: "CANCELED"}});
         }
       }
     } catch (e) {
@@ -63,6 +63,21 @@ export default class ParticipantEventsService {
       return new SuccessResponse();
     } else {
       throw new NotFoundResponse({message: "ParticipantEvent not found"})
+    }
+  }
+
+  static async listAll(id: ObjectId): Promise<IResponse> {
+    let resultList;
+    try {
+      resultList = await ParticipantEventModel.listAll(id);
+    } catch (e) {
+      throw new InternalServerErrorResponse(e);
+    }
+
+    if (resultList.length) {
+      return new SuccessResponse(resultList);
+    } else {
+      throw new NotFoundResponse({message: "ParticipantEvents not found"})
     }
   }
 
