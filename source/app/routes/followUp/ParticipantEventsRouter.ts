@@ -81,6 +81,7 @@ export default class ParticipantEventsRouter {
       if (body.hasOwnProperty("activityId")) {
         json.activityId = body.activityId;
       }
+      return json;
     }
   }
 };
