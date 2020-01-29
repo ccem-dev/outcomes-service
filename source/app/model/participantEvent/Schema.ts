@@ -66,4 +66,21 @@ ParticipantEventSchema.statics.getEventsByParticipant = async function (id: Obje
   ).toArray()
 };
 
+ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
+  return this.collection.aggregate([
+      {
+        $match:{
+          "participant": id,
+          "activated": true
+        }
+      },
+      {
+        $sort: {
+          "date": 1
+        }
+      }
+    ]
+  ).toArray()
+};
+
 export default ParticipantEventSchema;

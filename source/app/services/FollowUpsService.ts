@@ -6,6 +6,7 @@ import FollowUpEventModel from "../model/followUpEvent/model";
 import ObjectId = Types.ObjectId;
 import ParticipantEventModel from "../model/participantEvent/model";
 import ParticipantEventsService from "./ParticipantEventsService";
+import IParticipantEvent from "../model/participantEvent/Interface";
 
 
 export default class FollowUpsService {
@@ -74,48 +75,10 @@ export default class FollowUpsService {
     }
   }
 
-  static async getStatus(id: string): Promise<IResponse> {
-    let followUp;
-    let participantEvent;
-    let result;
+  static async listByParticipant(idParticipant: string): Promise<IResponse> {
+    let activatedFollowUps: [any];
     try {
-      followUp = await FollowUpModel.get(new ObjectId(id));
-      participantEvent = await ParticipantEventModel.getByEvent(new ObjectId(id));
-      if (followUp && participantEvent) {
-        let startDate = participantEvent.date;
-        let finalDate = new Date();
-        finalDate.setDate(participantEvent.date.getDate() + followUp.time - followUp.windowBetween);
-        // @ts-ignore
-        let remainingDays = Math.trunc((new Date() - finalDate) / 1000 / 60 / 60/ 24);
-        result = {
-          startDate: startDate,
-          finalDate: finalDate,
-          remainingDays: remainingDays
-        };
-
-        if (remainingDays < 0) {
-            let resultFollowUp = FollowUpModel.findOne({"order": followUp.order + 1});
-            let nextFollowUp = new ParticipantEventModel(resultFollowUp);
-            await ParticipantEventsService.accomplishedEvent(id);
-            await ParticipantEventsService.start(nextFollowUp)
-        }
-      }
-
-    } catch (e) {
-      throw new InternalServerErrorResponse()
-    }
-
-    if (followUp && participantEvent) {
-      return new SuccessResponse(result)
-    } else {
-      throw new NotFoundResponse()
-    }
-  }
-
-  static async listByParticipant(id: string): Promise<IResponse> {
-    let activatedFollowUps: [];
-    try {
-      let participantEvents = await ParticipantEventModel.getEventsByParticipant(new ObjectId(id));
+      let participantEvents = await ParticipantEventModel.getEventsByParticipant(new ObjectId(idParticipant));
       let followUpsEvents = await FollowUpEventModel.listActivatedEventsByParticipant(participantEvents);
       activatedFollowUps = await FollowUpModel.listAllActivatedByParticipant(followUpsEvents, participantEvents);
     } catch (e) {
@@ -123,10 +86,42 @@ export default class FollowUpsService {
     }
 
     if (activatedFollowUps.length > 0) {
+      let max = activatedFollowUps.length;
+      for (let i = 0; i < max; i++){
+        if (activatedFollowUps[i].participantEvents.length > 0) {
+          activatedFollowUps[i].deadline = this.getDeadline(activatedFollowUps[i].participantEvents[0].date, activatedFollowUps[i].time, activatedFollowUps[i+1].windowBetween);
+          if (activatedFollowUps[i].deadline.remainingDays < 0 && activatedFollowUps[i].participantEvents[0].status == "PENDING"){
+            let json: any = activatedFollowUps[i+1];
+            json.eventId = activatedFollowUps[i+1]._id;
+            json.participant = idParticipant;
+            json._id = null;
+            let nextFollowUp = new ParticipantEventModel(json);
+            await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
+            let result: any = await ParticipantEventsService.start(nextFollowUp);
+            activatedFollowUps[i+1].participantEvents.push(result.body.data);
+          }
+        }
+      }
+
       return new SuccessResponse(activatedFollowUps);
     } else {
       throw new NotFoundResponse()
     }
   }
+
+  static getDeadline = function (startDate: Date, time: number, windowBetween: number) {
+    let finalDate = new Date(startDate);
+    finalDate.setDate(finalDate.getDate() + time - windowBetween);
+    let Milliseconds = (finalDate.getTime() - Date.now());
+    let remainingDays: number = Milliseconds / 1000 / 60 / 60/ 24;
+    return {
+      startDate: startDate,
+      finalDate: finalDate,
+      remainingDays: Math.trunc(remainingDays)
+    };
+  }
+
+
+
 
 };
