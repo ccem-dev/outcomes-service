@@ -13,18 +13,11 @@ export default class ParticipantEventsRouter {
     let accomplishedPath: string = "/accomplished";
 
     app.post(basePath + startPath + '/:participant', async (req: Request, res: Response) => {
-      let json: any = {
-        objectType: req.body.objectType,
-        eventId: req.body._id,
-        participant: req.params.participant,
-      };
-
-      if (req.body.hasOwnProperty("activityId")){
-        json.activityId = req.body.activityId;
-      }
+      let json: any;
+      json = validateBody(req.body, req.params.participant);
       try {
         let event = new ParticipantEventModel(json);
-        let result =  await ParticipantEventsController.start(event);
+        let result = await ParticipantEventsController.start(event);
         res.status(result.code).send(result.body);
       } catch (err) {
         res.status(err.code).send(err.body)
@@ -66,5 +59,28 @@ export default class ParticipantEventsRouter {
         res.status(err.code).send(err.body)
       }
     });
+
+
+    function validateObjectType(type: string) {
+      let participantType = new RegExp(/^Participant/);
+
+      if (participantType.test(type)) {
+        return type;
+      } else {
+        return "Participant".concat(type);
+      }
+    }
+
+    function validateBody(body: any, participant: string) {
+      let json: any = {
+        objectType: validateObjectType(body.objectType),
+          eventId: body._id,
+        participant: participant,
+      };
+
+      if (body.hasOwnProperty("activityId")) {
+        json.activityId = body.activityId;
+      }
+    }
   }
 };
