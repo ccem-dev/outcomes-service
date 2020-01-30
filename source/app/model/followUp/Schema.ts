@@ -8,7 +8,7 @@ const FollowUpSchema: Schema = new Schema(
   {
     objectType: {
       type: String,
-      default: "followUp"
+      default: "FollowUp"
     },
     description: {
       type: String

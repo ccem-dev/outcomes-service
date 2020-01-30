@@ -1,12 +1,13 @@
-import IResponse, {SuccessResponse, InternalServerErrorResponse, NotFoundResponse} from '../utils/response';
+import IResponse, {InternalServerErrorResponse, NotFoundResponse, SuccessResponse} from '../utils/response';
 import IFollowUp from "../model/followUp/Interface";
 import {Types} from "mongoose";
 import FollowUpModel from "../model/followUp/model";
 import FollowUpEventModel from "../model/followUpEvent/model";
-import ObjectId = Types.ObjectId;
 import ParticipantEventModel from "../model/participantEvent/model";
 import ParticipantEventsService from "./ParticipantEventsService";
-import IParticipantEvent from "../model/participantEvent/Interface";
+import DeadlineService from "./DeadlineService";
+import ObjectId = Types.ObjectId;
+import {ObjectTypeService} from "./ObjectTypeService";
 
 
 export default class FollowUpsService {
@@ -89,17 +90,34 @@ export default class FollowUpsService {
       let max = activatedFollowUps.length;
       for (let i = 0; i < max; i++){
         if (activatedFollowUps[i].participantEvents.length > 0) {
-          activatedFollowUps[i].deadline = this.getDeadline(activatedFollowUps[i].participantEvents[0].date, activatedFollowUps[i].time, activatedFollowUps[i+1].windowBetween);
-          if (activatedFollowUps[i].deadline.remainingDays < 0 && activatedFollowUps[i].participantEvents[0].status == "PENDING"){
+          let _lastFollowUp = false;
+          let _mustStart = false;
+          let _windowBetween;
+          if (max -1 == i) {
+            _lastFollowUp = true;
+            _windowBetween = 0;
+          } else {
+            _windowBetween = activatedFollowUps[i+1].windowBetween;
+            _mustStart = activatedFollowUps[i].participantEvents[0].status != "ACCOMPLISHED" && activatedFollowUps[i+1].participantEvents.length == 0;
+          }
+          activatedFollowUps[i].deadline = DeadlineService.getDeadline(activatedFollowUps[i].participantEvents[0].date, activatedFollowUps[i].time, _windowBetween);
+          if (activatedFollowUps[i].deadline.remainingDays < 0 && _mustStart){
+            _mustStart = true;
+          }
+          if (_mustStart){
             let json: any = activatedFollowUps[i+1];
             json.eventId = activatedFollowUps[i+1]._id;
             json.participant = idParticipant;
             json._id = null;
-            let nextFollowUp = new ParticipantEventModel(json);
-            await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
-            let result: any = await ParticipantEventsService.start(nextFollowUp);
-            activatedFollowUps[i+1].participantEvents.push(result.body.data);
+            if (activatedFollowUps[i].participantEvents[0].status == "PENDING" || (activatedFollowUps[i].deadline.remainingDays < 0 && _lastFollowUp)) await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
+            if (! _lastFollowUp){
+              let nextFollowUp = new ParticipantEventModel(json);
+              nextFollowUp.objectType = ObjectTypeService.validateObjectType(nextFollowUp.objectType);
+              let result: any = await ParticipantEventsService.start(nextFollowUp);
+              activatedFollowUps[i+1].participantEvents.push(result.body.data);
+            }
           }
+
         }
       }
 
@@ -108,20 +126,4 @@ export default class FollowUpsService {
       throw new NotFoundResponse()
     }
   }
-
-  static getDeadline = function (startDate: Date, time: number, windowBetween: number) {
-    let finalDate = new Date(startDate);
-    finalDate.setDate(finalDate.getDate() + time - windowBetween);
-    let Milliseconds = (finalDate.getTime() - Date.now());
-    let remainingDays: number = Milliseconds / 1000 / 60 / 60/ 24;
-    return {
-      startDate: startDate,
-      finalDate: finalDate,
-      remainingDays: Math.trunc(remainingDays)
-    };
-  }
-
-
-
-
 };

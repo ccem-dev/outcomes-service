@@ -31,24 +31,21 @@ export default class ParticipantEventsService {
   }
 
   static async cancelFollowUp(id: string): Promise<IResponse> {
-    let updateResult;
     let followUp;
     try {
-      followUp = await ParticipantEventModel.findOne({"_id": new ObjectId(id)});
-      if (followUp) {
-        if (followUp.objectType == "FollowUp") {
-          updateResult = await ParticipantEventModel.updateOne({"_id": followUp._id}, {"$set": {status: "CANCELED"}});
-        }
-      }
+      followUp = await ParticipantEventModel.findOne({"_id": new ObjectId(id), "objectType": "ParticipantFollowUp"});
     } catch (e) {
       throw new InternalServerErrorResponse();
     }
 
-    if (updateResult.n) {
+    if (followUp) {
+      followUp.set("status", "CANCELED");
+      await followUp.save();
       return new SuccessResponse();
     } else {
       throw new NotFoundResponse({message: "ParticipantEvent not found"})
     }
+
   }
 
   static async accomplishedEvent(id: ObjectId): Promise<IResponse> {
