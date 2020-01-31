@@ -91,25 +91,32 @@ export default class FollowUpsService {
       for (let i = 0; i < max; i++){
         if (activatedFollowUps[i].participantEvents.length > 0) {
           let _lastFollowUp = false;
-          let _mustStart = false;
+          let _mustStartNextFollowUp = false;
           let _windowBetween;
           if (max -1 == i) {
             _lastFollowUp = true;
             _windowBetween = 0;
           } else {
-            _windowBetween = activatedFollowUps[i+1].windowBetween;
-            _mustStart = activatedFollowUps[i].participantEvents[0].status != "ACCOMPLISHED" && activatedFollowUps[i+1].participantEvents.length == 0;
+            _windowBetween = activatedFollowUps[i + 1].windowBetween;
           }
+
           activatedFollowUps[i].deadline = DeadlineService.getDeadline(activatedFollowUps[i].participantEvents[0].date, activatedFollowUps[i].time, _windowBetween);
-          if (activatedFollowUps[i].deadline.remainingDays < 0 && _mustStart){
-            _mustStart = true;
+
+          if (
+            activatedFollowUps[i].participantEvents[0].status != "ACCOMPLISHED" &&
+            activatedFollowUps[i].deadline.remainingDays < 0 &&
+            !_lastFollowUp &&
+            activatedFollowUps[max - 1].participantEvents.length === 0
+          ) {
+            _mustStartNextFollowUp = true;
           }
-          if (_mustStart){
-            let json: any = activatedFollowUps[i+1];
-            json.eventId = activatedFollowUps[i+1]._id;
+
+          if (_mustStartNextFollowUp) {
+            let json: any = activatedFollowUps[i + 1];
+            json.eventId = activatedFollowUps[i + 1]._id;
             json.participant = idParticipant;
-            json._id = null;
             if (activatedFollowUps[i].participantEvents[0].status == "PENDING" || (activatedFollowUps[i].deadline.remainingDays < 0 && _lastFollowUp)) await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
+            activatedFollowUps[i].participantEvents[0].status = "ACCOMPLISHED";
             if (! _lastFollowUp){
               let nextFollowUp = new ParticipantEventModel(json);
               nextFollowUp.objectType = ObjectTypeService.validateObjectType(nextFollowUp.objectType);
