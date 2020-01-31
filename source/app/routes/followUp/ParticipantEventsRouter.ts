@@ -1,6 +1,7 @@
 import express, {Request, Response} from "express";
 import ParticipantEventModel from "../../model/participantEvent/model"
 import ParticipantEventsController from "../../controllers/ParticipantEventsController";
+import {ObjectTypeService} from "../../services/ObjectTypeService";
 
 
 export default class ParticipantEventsRouter {
@@ -14,7 +15,7 @@ export default class ParticipantEventsRouter {
 
     app.post(basePath + startPath + '/:participant', async (req: Request, res: Response) => {
       let json: any;
-      json = validateBody(req.body, req.params.participant);
+      json = ObjectTypeService.validateBody(req.body, req.params.participant);
       try {
         let event = new ParticipantEventModel(json);
         let result = await ParticipantEventsController.start(event);
@@ -61,26 +62,6 @@ export default class ParticipantEventsRouter {
     });
 
 
-    function validateObjectType(type: string) {
-      let participantType = new RegExp(/^Participant/);
 
-      if (participantType.test(type)) {
-        return type;
-      } else {
-        return "Participant".concat(type);
-      }
-    }
-
-    function validateBody(body: any, participant: string) {
-      let json: any = {
-        objectType: validateObjectType(body.objectType),
-          eventId: body._id,
-        participant: participant,
-      };
-
-      if (body.hasOwnProperty("activityId")) {
-        json.activityId = body.activityId;
-      }
-    }
   }
 };

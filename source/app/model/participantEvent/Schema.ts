@@ -23,13 +23,9 @@ const ParticipantEventSchema: Schema = new Schema(
       type: Boolean,
       default: true
     },
-    status:{
+    status: {
       type: String,
       default: "PENDING"
-    },
-    description: {
-      type: String,
-      default: ""
     }
   },
   {
@@ -51,7 +47,7 @@ ParticipantEventSchema.statics.getByEvent = async function (id: ObjectId) {
 ParticipantEventSchema.statics.getEventsByParticipant = async function (id: ObjectId) {
   return this.collection.aggregate([
       {
-        $match:{
+        $match: {
           "participant": id,
           "activated": true
         }
@@ -69,7 +65,7 @@ ParticipantEventSchema.statics.getEventsByParticipant = async function (id: Obje
 ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
   return this.collection.aggregate([
       {
-        $match:{
+        $match: {
           "participant": id,
           "activated": true
         }
@@ -77,6 +73,24 @@ ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
       {
         $sort: {
           "date": 1
+        }
+      },
+      {
+        $lookup: {
+          from: "follow-up-event",
+          localField: "eventId",
+          foreignField: "_id",
+          as: "description"
+        }
+      },
+      {
+        $addFields: {
+          "description": {$arrayElemAt: ["$description", 0]}
+        }
+      },
+      {
+        $addFields: {
+          "description": {$cond: [{$ifNull: ["$description", false]}, "$description.description", ""]}
         }
       }
     ]

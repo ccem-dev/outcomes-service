@@ -3,6 +3,7 @@ import {Types} from "mongoose";
 import ParticipantEventModel from "../model/participantEvent/model.js";
 import IParticipantEvent from "../model/participantEvent/Interface";
 import ObjectId = Types.ObjectId;
+import {StatusEventsType} from "../model/utils/StatusEventsType";
 
 
 export default class ParticipantEventsService {
@@ -31,30 +32,27 @@ export default class ParticipantEventsService {
   }
 
   static async cancelFollowUp(id: string): Promise<IResponse> {
-    let updateResult;
     let followUp;
     try {
-      followUp = await ParticipantEventModel.findOne({"_id": new ObjectId(id)});
-      if (followUp) {
-        if (followUp.objectType == "FollowUp") {
-          updateResult = await ParticipantEventModel.updateOne({"_id": followUp._id}, {"$set": {status: "CANCELED"}});
-        }
-      }
+      followUp = await ParticipantEventModel.findOne({"_id": new ObjectId(id), "objectType": "ParticipantFollowUp"});
     } catch (e) {
       throw new InternalServerErrorResponse();
     }
 
-    if (updateResult.n) {
+    if (followUp) {
+      followUp.set("status", "CANCELED");
+      await followUp.save();
       return new SuccessResponse();
     } else {
       throw new NotFoundResponse({message: "ParticipantEvent not found"})
     }
+
   }
 
   static async accomplishedEvent(id: ObjectId): Promise<IResponse> {
     let updateResult;
     try {
-      updateResult = await ParticipantEventModel.updateOne({"eventId": id}, {"$set": {status: "ACCOMPLISHED"}});
+      updateResult = await ParticipantEventModel.updateOne({"eventId": id}, {"$set": {status: StatusEventsType.ACCOMPLISHED}});
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }
