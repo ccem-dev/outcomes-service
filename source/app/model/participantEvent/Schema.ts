@@ -67,7 +67,8 @@ ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
       {
         $match: {
           "participant": id,
-          "activated": true
+          "activated": true,
+          "objectType": { $not: /ParticipantFollowUp/}
         }
       },
       {
@@ -80,17 +81,12 @@ ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
           from: "follow-up-event",
           localField: "eventId",
           foreignField: "_id",
-          as: "description"
+          as: "event"
         }
       },
       {
         $addFields: {
-          "description": {$arrayElemAt: ["$description", 0]}
-        }
-      },
-      {
-        $addFields: {
-          "description": {$cond: [{$ifNull: ["$description", false]}, "$description.description", ""]}
+          "event": {$arrayElemAt: ["$event", 0]}
         }
       }
     ]
