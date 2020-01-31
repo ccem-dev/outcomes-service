@@ -104,8 +104,9 @@ export default class FollowUpsService {
           activatedFollowUps[i].deadline = DeadlineService.getDeadline(activatedFollowUps[i].participantEvents[0].date, activatedFollowUps[i].time, _windowBetween);
 
           if (_lastFollowUp) {
-            if (activatedFollowUps[i].participantEvents[0].status === StatusEventsType.PENDING || (activatedFollowUps[i].deadline.remainingDays < 0)) {//Accomplish the last follow-up
+            if (activatedFollowUps[i].participantEvents[0].status === StatusEventsType.PENDING && activatedFollowUps[i].deadline.remainingDays < 0) {//Accomplish the last follow-up
               await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
+              activatedFollowUps[i].participantEvents[0].status = StatusEventsType.ACCOMPLISHED;
             }
 
           } else {
