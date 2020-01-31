@@ -3,6 +3,7 @@ import {Types} from "mongoose";
 import ParticipantEventModel from "../model/participantEvent/model.js";
 import IParticipantEvent from "../model/participantEvent/Interface";
 import ObjectId = Types.ObjectId;
+import {StatusEventsType} from "../model/utils/StatusEventsType";
 
 
 export default class ParticipantEventsService {
@@ -51,7 +52,7 @@ export default class ParticipantEventsService {
   static async accomplishedEvent(id: ObjectId): Promise<IResponse> {
     let updateResult;
     try {
-      updateResult = await ParticipantEventModel.updateOne({"eventId": id}, {"$set": {status: "ACCOMPLISHED"}});
+      updateResult = await ParticipantEventModel.updateOne({"eventId": id}, {"$set": {status: StatusEventsType.ACCOMPLISHED}});
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }

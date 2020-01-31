@@ -6,8 +6,9 @@ import FollowUpEventModel from "../model/followUpEvent/model";
 import ParticipantEventModel from "../model/participantEvent/model";
 import ParticipantEventsService from "./ParticipantEventsService";
 import DeadlineService from "./DeadlineService";
-import ObjectId = Types.ObjectId;
 import {ObjectTypeService} from "./ObjectTypeService";
+import {StatusEventsType} from "../model/utils/StatusEventsType";
+import ObjectId = Types.ObjectId;
 
 
 export default class FollowUpsService {
@@ -86,14 +87,14 @@ export default class FollowUpsService {
       throw new InternalServerErrorResponse()
     }
 
-    if (activatedFollowUps.length > 0) {
+    if (activatedFollowUps.length > 0) { //There are results
       let max = activatedFollowUps.length;
-      for (let i = 0; i < max; i++){
-        if (activatedFollowUps[i].participantEvents.length > 0) {
+      for (let i = 0; i < max; i++) {
+
+        if (activatedFollowUps[i].participantEvents.length > 0) { //There is a participant event
           let _lastFollowUp = false;
-          let _mustStartNextFollowUp = false;
           let _windowBetween;
-          if (max -1 == i) {
+          if (max - 1 == i) {
             _lastFollowUp = true;
             _windowBetween = 0;
           } else {
@@ -102,35 +103,43 @@ export default class FollowUpsService {
 
           activatedFollowUps[i].deadline = DeadlineService.getDeadline(activatedFollowUps[i].participantEvents[0].date, activatedFollowUps[i].time, _windowBetween);
 
-          if (
-            activatedFollowUps[i].participantEvents[0].status != "ACCOMPLISHED" &&
-            activatedFollowUps[i].deadline.remainingDays < 0 &&
-            !_lastFollowUp &&
-            activatedFollowUps[max - 1].participantEvents.length === 0
-          ) {
-            _mustStartNextFollowUp = true;
-          }
+          if (_lastFollowUp) {
+            if (activatedFollowUps[i].participantEvents[0].status === StatusEventsType.PENDING || (activatedFollowUps[i].deadline.remainingDays < 0)) {//Accomplish the last follow-up
+              await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
+            }
 
-          if (_mustStartNextFollowUp) {
-            let json: any = activatedFollowUps[i + 1];
-            json.eventId = activatedFollowUps[i + 1]._id;
-            json.participant = idParticipant;
-            if (activatedFollowUps[i].participantEvents[0].status == "PENDING" || (activatedFollowUps[i].deadline.remainingDays < 0 && _lastFollowUp)) await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
-            activatedFollowUps[i].participantEvents[0].status = "ACCOMPLISHED";
-            if (! _lastFollowUp){
-              let nextFollowUp = new ParticipantEventModel(json);
-              nextFollowUp.objectType = ObjectTypeService.validateObjectType(nextFollowUp.objectType);
-              let result: any = await ParticipantEventsService.start(nextFollowUp);
-              activatedFollowUps[i+1].participantEvents.push(result.body.data);
+          } else {
+            //if there is no next event
+            if (activatedFollowUps[i + 1].participantEvents.length === 0) {
+              //Time is over
+              if (activatedFollowUps[i].deadline.remainingDays < 0) {
+                //follow-up not accomplished
+                if (activatedFollowUps[i].participantEvents[0].status != StatusEventsType.ACCOMPLISHED) {
+                  //accomplish follow-up pending
+                  if (activatedFollowUps[i].participantEvents[0].status === StatusEventsType.PENDING) {
+                    await ParticipantEventsService.accomplishedEvent(new ObjectId(activatedFollowUps[i]._id));
+                    activatedFollowUps[i].participantEvents[0].status = StatusEventsType.ACCOMPLISHED;
+                  }
+                  //start next follow-up
+                  let json: any = activatedFollowUps[i + 1];
+                  json.eventId = activatedFollowUps[i + 1]._id;
+                  json.participant = new ObjectId(idParticipant);
+                  json._id = new ObjectId();
+                  let nextFollowUp = new ParticipantEventModel(json);
+                  nextFollowUp.objectType = ObjectTypeService.validateObjectType(nextFollowUp.objectType);
+                  let result: any = await ParticipantEventsService.start(nextFollowUp);
+                  activatedFollowUps[i + 1].participantEvents.push(result.body.data);
+                }
+              }
             }
           }
-
         }
       }
-
       return new SuccessResponse(activatedFollowUps);
     } else {
       throw new NotFoundResponse()
     }
   }
+
+
 };

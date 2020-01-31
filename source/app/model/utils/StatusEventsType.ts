@@ -1,0 +1,5 @@
+export enum StatusEventsType {
+  PENDING = "PENDING",
+  CANCELED = "CANCELED",
+  ACCOMPLISHED = "ACCOMPLISHED"
+}
