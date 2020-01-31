@@ -13,7 +13,7 @@ export class ObjectTypeService {
     let json: any = {
       objectType: this.validateObjectType(body.objectType),
       eventId: body._id,
-      participant: participant,
+      participant: participant
     };
 
     if (body.hasOwnProperty("activityId")) {
