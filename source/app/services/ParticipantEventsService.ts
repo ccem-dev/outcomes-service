@@ -52,7 +52,7 @@ export default class ParticipantEventsService {
   static async accomplishedEvent(id: ObjectId): Promise<IResponse> {
     let updateResult;
     try {
-      updateResult = await ParticipantEventModel.updateOne({"eventId": id}, {"$set": {status: StatusEventsType.ACCOMPLISHED}});
+      updateResult = await ParticipantEventModel.updateOne({"_id": id}, {"$set": {status: StatusEventsType.ACCOMPLISHED}});
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }
