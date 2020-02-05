@@ -16,6 +16,7 @@ export default class FollowUpsService {
         order = 0;
       }
       event.set("order",order);
+      event.set("_id",new ObjectId);
       await event.save();
       return new SuccessResponse({ id: event._id });
     } catch (e) {
