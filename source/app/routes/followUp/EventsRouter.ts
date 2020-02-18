@@ -6,7 +6,7 @@ export default class EventsRouter {
   public static initialize(app: express.Application) {
     let basePath: string = "/event";
     let createPath: string = "/create";
-    let getPath: string = "/notification-data";
+    let notificationDataPath: string = "/notification-data";
     let removePath: string = "/remove";
 
     app.post(basePath + createPath + "/:followUpId", async (req: Request, res: Response) => {
@@ -20,7 +20,7 @@ export default class EventsRouter {
       }
     });
 
-    app.get(basePath + getPath + "/:eventId", async (req: Request, res: Response) => {
+    app.get(basePath + notificationDataPath + "/:eventId", async (req: Request, res: Response) => {
       try {
         let result =  await EventsController.getEmailNotificationTemplate(req.params.eventId);
         res.status(result.code).send(result.body)
