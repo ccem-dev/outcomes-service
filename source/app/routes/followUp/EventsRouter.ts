@@ -1,14 +1,12 @@
-import {Response, Request} from "express";
-import express from "express";
+import express, {Request, Response} from "express";
 import EventsController from "../../controllers/EventsController";
 import EventModel from "../../model/followUpEvent/model";
-import {EmailNotification} from "../../model/utils/EmailNotification";
 
 export default class EventsRouter {
   public static initialize(app: express.Application) {
     let basePath: string = "/event";
     let createPath: string = "/create";
-    let findPath: string = "/find";
+    let getPath: string = "/notification-data";
     let removePath: string = "/remove";
 
     app.post(basePath + createPath + "/:followUpId", async (req: Request, res: Response) => {
@@ -22,9 +20,9 @@ export default class EventsRouter {
       }
     });
 
-    app.get(basePath + findPath + "/:eventId", async (req: Request, res: Response) => {
+    app.get(basePath + getPath + "/:eventId", async (req: Request, res: Response) => {
       try {
-        let result =  await EventsController.find(req.params.eventId);
+        let result =  await EventsController.getEmailNotificationTemplate(req.params.eventId);
         res.status(result.code).send(result.body)
       } catch (err) {
         res.status(err.code).send(err.body)

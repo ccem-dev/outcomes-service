@@ -26,12 +26,11 @@ export default class FollowUpsService {
     }
   }
 
-  static async find(id: ObjectId): Promise<IResponse> {
+  static async getEmailNotificationTemplate(id: ObjectId): Promise<IResponse> {
     let event: IEvent = await FollowUpEventModel.findOne({"_id": id});
 
     try {
-
-      return new SuccessResponse(event);
+      return new SuccessResponse(new EmailNotification(event.emailNotification).buildTemplate());
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }

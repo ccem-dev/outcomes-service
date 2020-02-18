@@ -9,8 +9,8 @@ export default class EventsController {
     return EventsService.create(event);
   }
 
-  static async find(id: string): Promise<IResponse> {
-    return EventsService.find(new ObjectId(id));
+  static async getEmailNotificationTemplate(id: string): Promise<IResponse> {
+    return EventsService.getEmailNotificationTemplate(new ObjectId(id));
   }
 
   static async remove(eventId: string): Promise<IResponse> {

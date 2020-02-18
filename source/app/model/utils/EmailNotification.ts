@@ -26,6 +26,18 @@ export class EmailNotification {
     return result;
   }
 
+  buildTemplate() {
+    let _variables: any = {};
+    this.variables.forEach((value) => {
+      _variables[value] = '';
+    });
+    return {
+      _id: this._id,
+      email: '',
+      variables: _variables
+    };
+  }
+
 }
 
 const emailNotification = new Schema(
