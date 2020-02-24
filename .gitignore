@@ -5,3 +5,4 @@ dist
 .terraform/
 terraform.tfstate*
 .*swp
+.npmrc
