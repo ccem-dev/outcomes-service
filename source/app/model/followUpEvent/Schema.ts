@@ -1,5 +1,6 @@
 import {Schema, Types} from "mongoose";
 import IParticipantEvent from "../participantEvent/Interface";
+import emailNotification, {EmailNotification} from "../utils/EmailNotification";
 import ObjectId = Types.ObjectId;
 
 const eventSchema = new Schema(
@@ -20,6 +21,7 @@ const eventSchema = new Schema(
       type:Number,
       required: true
     },
+    emailNotification: emailNotification,
     activated: {
       type:Boolean,
       default: true

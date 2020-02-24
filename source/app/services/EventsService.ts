@@ -3,6 +3,7 @@ import {Types} from "mongoose";
 import FollowUpEventModel from "../model/followUpEvent/model";
 import IEvent from "../model/followUpEvent/Interface";
 import ObjectId = Types.ObjectId;
+import {EmailNotification} from "../model/utils/EmailNotification";
 
 export default class FollowUpsService {
   static async create(event: IEvent): Promise<IResponse> {
@@ -17,8 +18,19 @@ export default class FollowUpsService {
       }
       event.set("order",order);
       event.set("_id",new ObjectId);
+      event.set('emailNotification', new EmailNotification(event.emailNotification));
       await event.save();
       return new SuccessResponse({ id: event._id });
+    } catch (e) {
+      throw new InternalServerErrorResponse(e);
+    }
+  }
+
+  static async getEmailNotificationTemplate(id: ObjectId): Promise<IResponse> {
+    let event: IEvent = await FollowUpEventModel.findOne({"_id": id});
+
+    try {
+      return new SuccessResponse(new EmailNotification(event.emailNotification).buildTemplate());
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }

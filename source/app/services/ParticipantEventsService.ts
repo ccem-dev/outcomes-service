@@ -2,14 +2,15 @@ import IResponse, {InternalServerErrorResponse, NotFoundResponse, SuccessRespons
 import {Types} from "mongoose";
 import ParticipantEventModel from "../model/participantEvent/model.js";
 import IParticipantEvent from "../model/participantEvent/Interface";
-import ObjectId = Types.ObjectId;
 import {StatusEventsType} from "../model/utils/StatusEventsType";
+import ObjectId = Types.ObjectId;
 
 
 export default class ParticipantEventsService {
   static async start(participantEvent: IParticipantEvent): Promise<IResponse> {
     try {
       await participantEvent.save();
+
       return new SuccessResponse(participantEvent);
     } catch (e) {
       throw new InternalServerErrorResponse(e);
