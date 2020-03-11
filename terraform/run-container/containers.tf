@@ -1,5 +1,5 @@
 variable "outcomes-service-port"{
-  default = 53002
+  default = 53003
 }
 
 variable "outcomes-service-name"{
@@ -7,7 +7,7 @@ variable "outcomes-service-name"{
 }
 
 variable "outcomes-service-network"{
-  default = "outcomes-service-network"
+  default = "otus-api-network"
 }
 
 resource "docker_image" "outcomes-service" {
