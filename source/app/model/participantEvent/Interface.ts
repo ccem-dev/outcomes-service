@@ -9,6 +9,7 @@ export default interface IParticipantEvent extends Document {
   date: string;
   description: string;
   activated: Boolean;
+  status: String;
 }
 
 export interface IParticipantEventModel extends Model<IParticipantEvent> {
