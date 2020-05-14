@@ -16,12 +16,15 @@ const ParticipantEventSchema: Schema = new Schema(
       required: true
     },
     eventId: {
-      type: ObjectId,
-      required: true
+      type: ObjectId
     },
     activated: {
       type: Boolean,
       default: true
+    },
+    description: {
+      type:String,
+      required: true
     },
     status: {
       type: String,
@@ -74,19 +77,6 @@ ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
       {
         $sort: {
           "date": 1
-        }
-      },
-      {
-        $lookup: {
-          from: "follow-up-event",
-          localField: "eventId",
-          foreignField: "_id",
-          as: "event"
-        }
-      },
-      {
-        $addFields: {
-          "event": {$arrayElemAt: ["$event", 0]}
         }
       }
     ]

@@ -14,11 +14,14 @@ export class ObjectTypeService {
       objectType: this.validateObjectType(body.objectType),
       eventId: body._id,
       participant: participant,
-      emailNotification: body.emailNotification
+      emailNotification: body.emailNotification,
+      description: body.description
     };
 
     if (body.hasOwnProperty("activityId")) {
       json.activityId = body.activityId;
+      json.name = body.name;
+      json.acronym = body.acronym;
     }
     return json;
   }
