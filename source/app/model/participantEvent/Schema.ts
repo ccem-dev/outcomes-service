@@ -1,5 +1,6 @@
 import {Schema, Types} from "mongoose";
 import ObjectId = Types.ObjectId;
+import {StatusEventsType} from "../utils/StatusEventsType";
 
 const ParticipantEventSchema: Schema = new Schema(
   {
@@ -66,9 +67,12 @@ ParticipantEventSchema.statics.getEventsByParticipant = async function (id: Obje
 };
 
 ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
-  return this.collection.aggregate([
+  let pendingEvents:Array<any> = [];
+  let accomplishedEvents:Array<any> = [];
+  pendingEvents = await this.collection.aggregate([
       {
         $match: {
+          "status": StatusEventsType.PENDING,
           "participant": id,
           "activated": true,
           "objectType": { $not: /ParticipantFollowUp/}
@@ -81,6 +85,25 @@ ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
       }
     ]
   ).toArray()
+
+  accomplishedEvents = await this.collection.aggregate([
+      {
+        $match: {
+          "status": StatusEventsType.ACCOMPLISHED,
+          "participant": id,
+          "activated": true,
+          "objectType": { $not: /ParticipantFollowUp/}
+        }
+      },
+      {
+        $sort: {
+          "date": 1
+        }
+      }
+    ]
+  ).toArray()
+  let fullList:Array<any> = pendingEvents.concat(accomplishedEvents)
+  return fullList
 };
 
 export default ParticipantEventSchema;
