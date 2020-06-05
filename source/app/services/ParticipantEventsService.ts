@@ -70,6 +70,7 @@ export default class ParticipantEventsService {
     try {
       resultList = await ParticipantEventModel.listAll(id);
     } catch (e) {
+      console.error(e)
       throw new InternalServerErrorResponse(e);
     }
 
