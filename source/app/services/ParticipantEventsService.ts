@@ -65,10 +65,10 @@ export default class ParticipantEventsService {
     }
   }
 
-  static async discardEvent(id: ObjectId): Promise<IResponse> {
+  static async discardEvent(activityId: ObjectId): Promise<IResponse> {
     let updateResult;
     try {
-      updateResult = await ParticipantEventModel.updateOne({ "_id": id }, { "$set": { activated: false } });
+      updateResult = await ParticipantEventModel.updateOne({ "activityId": activityId }, { "$set": { activated: false } });
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }

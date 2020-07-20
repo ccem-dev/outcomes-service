@@ -21,8 +21,8 @@ export default class ParticipantEventsController {
     return ParticipantEventsService.accomplishedEvent(new ObjectId(id));
   }
 
-  static async discardEvent(id: string): Promise<IResponse> {
-    return ParticipantEventsService.discardEvent(new ObjectId(id));
+  static async discardEvent(activityId: string): Promise<IResponse> {
+    return ParticipantEventsService.discardEvent(new ObjectId(activityId));
   }
 
   static async listAll(id: string): Promise<IResponse> {
