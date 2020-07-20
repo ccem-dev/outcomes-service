@@ -1,8 +1,8 @@
-import IResponse, {InternalServerErrorResponse, NotFoundResponse, SuccessResponse} from '../utils/response';
-import {Types} from "mongoose";
+import IResponse, { InternalServerErrorResponse, NotFoundResponse, SuccessResponse } from '../utils/response';
+import { Types } from "mongoose";
 import ParticipantEventModel from "../model/participantEvent/model.js";
 import IParticipantEvent from "../model/participantEvent/Interface";
-import {StatusEventsType} from "../model/utils/StatusEventsType";
+import { StatusEventsType } from "../model/utils/StatusEventsType";
 import ObjectId = Types.ObjectId;
 
 
@@ -28,14 +28,14 @@ export default class ParticipantEventsService {
     if (participantEventResult) {
       return new SuccessResponse(participantEventResult);
     } else {
-      throw new NotFoundResponse({message: "ParticipantEvent not found"})
+      throw new NotFoundResponse({ message: "ParticipantEvent not found" })
     }
   }
 
   static async cancelFollowUp(id: string): Promise<IResponse> {
     let followUp;
     try {
-      followUp = await ParticipantEventModel.findOne({"_id": new ObjectId(id), "objectType": "ParticipantFollowUp"});
+      followUp = await ParticipantEventModel.findOne({ "_id": new ObjectId(id), "objectType": "ParticipantFollowUp" });
     } catch (e) {
       throw new InternalServerErrorResponse();
     }
@@ -45,7 +45,7 @@ export default class ParticipantEventsService {
       await followUp.save();
       return new SuccessResponse();
     } else {
-      throw new NotFoundResponse({message: "ParticipantEvent not found"})
+      throw new NotFoundResponse({ message: "ParticipantEvent not found" })
     }
 
   }
@@ -53,7 +53,7 @@ export default class ParticipantEventsService {
   static async accomplishedEvent(id: ObjectId): Promise<IResponse> {
     let updateResult;
     try {
-      updateResult = await ParticipantEventModel.updateOne({"_id": id}, {"$set": {status: StatusEventsType.ACCOMPLISHED}});
+      updateResult = await ParticipantEventModel.updateOne({ "_id": id }, { "$set": { status: StatusEventsType.ACCOMPLISHED } });
     } catch (e) {
       throw new InternalServerErrorResponse(e);
     }
@@ -61,7 +61,22 @@ export default class ParticipantEventsService {
     if (updateResult.n) {
       return new SuccessResponse();
     } else {
-      throw new NotFoundResponse({message: "ParticipantEvent not found"})
+      throw new NotFoundResponse({ message: "ParticipantEvent not found" })
+    }
+  }
+
+  static async discardEvent(id: ObjectId): Promise<IResponse> {
+    let updateResult;
+    try {
+      updateResult = await ParticipantEventModel.updateOne({ "_id": id }, { "$set": { activated: false } });
+    } catch (e) {
+      throw new InternalServerErrorResponse(e);
+    }
+
+    if (updateResult.n) {
+      return new SuccessResponse();
+    } else {
+      throw new NotFoundResponse({ message: "ParticipantEvent not found" })
     }
   }
 
@@ -77,7 +92,7 @@ export default class ParticipantEventsService {
     if (resultList.length) {
       return new SuccessResponse(resultList);
     } else {
-      throw new NotFoundResponse({message: "ParticipantEvents not found"})
+      throw new NotFoundResponse({ message: "ParticipantEvents not found" })
     }
   }
 

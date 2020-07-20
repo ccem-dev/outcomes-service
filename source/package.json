@@ -6,7 +6,8 @@
   "scripts": {
     "production": "rm -rf node_modules dist package-lock && npm install && npm test && npm run build",
     "build": "tsc",
-    "postbuild": "cp -R node_modules dist/node_modules"
+    "postbuild": "cp -R node_modules dist/node_modules",
+    "start": "nodemon"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
     "express-list-endpoints": "4.0.1",
     "mongoose": "5.8.7",
     "mongoose-schema-extend": "0.2.2",
+    "nodemon": "2.0.4",
     "typescript": "3.6.4"
   },
   "devDependencies": {
