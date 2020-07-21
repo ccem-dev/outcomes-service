@@ -67,14 +67,16 @@ export default class ParticipantEventsService {
 
   static async discardEvent(activityId: ObjectId): Promise<IResponse> {
     let updateResult;
+
     try {
       updateResult = await ParticipantEventModel.updateOne({ "activityId": activityId }, { "$set": { activated: false } });
     } catch (e) {
+      console.error(e);
       throw new InternalServerErrorResponse(e);
     }
 
     if (updateResult.n) {
-      return new SuccessResponse();
+      return new SuccessResponse(!!updateResult.nModified);
     } else {
       throw new NotFoundResponse({ message: "ParticipantEvent not found" })
     }
