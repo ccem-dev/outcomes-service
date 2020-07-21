@@ -6,7 +6,9 @@
   "scripts": {
     "production": "rm -rf node_modules dist package-lock && npm install && npm test && npm run build",
     "build": "tsc",
-    "postbuild": "cp -R node_modules dist/node_modules"
+    "postbuild": "cp -R node_modules dist/node_modules",
+    "debug": "nodemon --inspect ./dist/config/server.js",
+    "dev": "nodemon"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +26,7 @@
     "@types/express": "4.17.1",
     "@types/mongoose": "5.5.41",
     "@types/node": "12.11.7",
-    "jest": "24.9.0"
+    "jest": "24.9.0",
+    "nodemon": "2.0.4"
   }
 }
