@@ -1,4 +1,4 @@
-import IResponse, { ValidationResponse } from '../utils/response';
+import IResponse, { InternalServerErrorResponse, ValidationResponse } from '../utils/response';
 import ParticipantEventsService from "../services/ParticipantEventsService";
 import IParticipantEvent from "../model/participantEvent/Interface";
 import { Types } from "mongoose";
@@ -10,33 +10,42 @@ export default class ParticipantEventsController {
   }
 
   static async existEvent(participant: string, eventId: string): Promise<IResponse> {
-    validObjectId(eventId);
+    validateObjectId(eventId);
     return ParticipantEventsService.existEvent(participant, eventId);
   }
 
   static async cancelFollowUp(id: string): Promise<IResponse> {
-    validObjectId(id);
+    validateObjectId(id);
     return ParticipantEventsService.cancelFollowUp(id);
   }
 
   static async accomplishedEvent(id: string): Promise<IResponse> {
-    validObjectId(id);
-    return ParticipantEventsService.accomplishedEvent(new ObjectId(id));
+    validateObjectId(id);
+    return ParticipantEventsService.accomplishedEvent(new ObjectId(id))
+      .catch(err => {
+        throw new InternalServerErrorResponse(err);
+      });
   }
 
   static async discardEvent(activityId: string): Promise<IResponse> {
-    validObjectId(activityId);
-    return ParticipantEventsService.discardEvent(new ObjectId(activityId));
+    validateObjectId(activityId);
+    return ParticipantEventsService.discardEvent(new ObjectId(activityId))
+      .catch(err => {
+        throw new InternalServerErrorResponse(err);
+      });
   }
 
   static async listAll(id: string): Promise<IResponse> {
-    validObjectId(id);
-    return ParticipantEventsService.listAll(new ObjectId(id));
+    validateObjectId(id);
+    return ParticipantEventsService.listAll(new ObjectId(id))
+      .catch(err => {
+        throw new InternalServerErrorResponse(err);
+      });
   }
 
 };
 
-function validObjectId(id: string) {
+function validateObjectId(id: string) {
   if (!ObjectId.isValid(id)) {
     throw new ValidationResponse({ message: "ObjectId is not valid" });
   }
