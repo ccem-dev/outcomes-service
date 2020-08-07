@@ -6,3 +6,4 @@ dist
 terraform.tfstate*
 .*swp
 .npmrc
+source/report.*.json
