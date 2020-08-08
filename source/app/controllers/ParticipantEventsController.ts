@@ -1,45 +1,80 @@
-import IResponse, { InternalServerErrorResponse, ValidationResponse } from '../utils/response';
+import IResponse, {InternalServerErrorResponse, ValidationResponse} from '../utils/response';
 import ParticipantEventsService from "../services/ParticipantEventsService";
 import IParticipantEvent from "../model/participantEvent/Interface";
-import { Types } from "mongoose";
+import {Types} from "mongoose";
 import ObjectId = Types.ObjectId;
+import {Request, Response} from "express";
 
 export default class ParticipantEventsController {
-  static async start(participant: IParticipantEvent): Promise<IResponse> {
-    return ParticipantEventsService.start(participant);
+  static start(req: Request, res: Response, participant: IParticipantEvent): void {
+    ParticipantEventsService.start(participant)
+      .then(result => {
+        res.status(result.code).send(result.body);
+      })
+      .catch(err => {
+        res.status(err.code).send(err.body)
+      });
   }
 
-  static async existEvent(participant: string, eventId: string): Promise<IResponse> {
+  static cancelFollowUp(req: Request, res: Response): void {
+    let id = req.params.id;
+    validateObjectId(id);
+    ParticipantEventsService.cancelFollowUp(id)
+      .then(result => {
+        res.status(result.code).send(result.body);
+      })
+      .catch(err => {
+        res.status(err.code).send(err.body);
+      });
+  }
+
+  static existEvent(req: Request, res: Response): void {
+    let participant = req.params.participant;
+    let eventId = req.params.event;
+
     validateObjectId(eventId);
-    return ParticipantEventsService.existEvent(participant, eventId);
-  }
-
-  static async cancelFollowUp(id: string): Promise<IResponse> {
-    validateObjectId(id);
-    return ParticipantEventsService.cancelFollowUp(id);
-  }
-
-  static async accomplishedEvent(id: string): Promise<IResponse> {
-    validateObjectId(id);
-    return ParticipantEventsService.accomplishedEvent(new ObjectId(id))
+    ParticipantEventsService.existEvent(participant, eventId)
+      .then(result => {
+        res.status(result.code).send(result.body);
+      })
       .catch(err => {
-        throw new InternalServerErrorResponse(err);
+        res.status(err.code).send(err.body)
       });
   }
 
-  static async discardEvent(activityId: string): Promise<IResponse> {
+  static accomplishedEvent(req: Request, res: Response): void {
+    let id = req.params.id;
+    validateObjectId(id);
+    ParticipantEventsService.accomplishedEvent(new ObjectId(id))
+      .then(result => {
+        res.status(result.code).send(result.body);
+      })
+      .catch(err => {
+        res.status(err.code).send(err.body)
+      });
+  }
+
+  static discardEvent(req: Request, res: Response): void {
+    let activityId = req.params.activityId;
     validateObjectId(activityId);
-    return ParticipantEventsService.discardEvent(new ObjectId(activityId))
+    ParticipantEventsService.discardEvent(new ObjectId(activityId))
+      .then(result => {
+        res.status(result.code).send(result.body);
+      })
       .catch(err => {
-        throw new InternalServerErrorResponse(err);
+        res.status(err.code).send(err.body)
       });
   }
 
-  static async listAll(id: string): Promise<IResponse> {
+  static listAll(req: Request, res: Response): void {
+    let id = req.params.id;
     validateObjectId(id);
-    return ParticipantEventsService.listAll(new ObjectId(id))
+    ParticipantEventsService.listAll(new ObjectId(id))
+      .then(result => {
+        res.status(result.code).send(result.body);
+      })
       .catch(err => {
-        throw new InternalServerErrorResponse(err);
+        res.status(err.code).send(err.body)
       });
   }
 
@@ -47,6 +82,6 @@ export default class ParticipantEventsController {
 
 function validateObjectId(id: string) {
   if (!ObjectId.isValid(id)) {
-    throw new ValidationResponse({ message: "ObjectId is not valid" });
+    throw new ValidationResponse({message: "ObjectId is not valid"});
   }
 }

@@ -16,11 +16,11 @@ export default class ParticipantEventsRouter {
 
     app.post(basePath + startPath + '/:participant', async (req: Request, res: Response) => {
       let json: any;
-      json = ObjectTypeService.validateBody(req.body, req.params.participant);
       try {
+        json = ObjectTypeService.validateBody(req.body, req.params.participant);
+
         let event = new ParticipantEventModel(json);
-        let result = await ParticipantEventsController.start(event);
-        res.status(result.code).send(result.body);
+        ParticipantEventsController.start(req, res, event);
       } catch (err) {
         res.status(err.code).send(err.body)
       }
@@ -28,8 +28,7 @@ export default class ParticipantEventsRouter {
 
     app.put(basePath + cancelPath + "/:id", async (req: Request, res: Response) => {
       try {
-        let result = await ParticipantEventsController.cancelFollowUp(req.params.id);
-        res.status(result.code).send(result.body);
+        ParticipantEventsController.cancelFollowUp(req, res);
       } catch (err) {
         res.status(err.code).send(err.body);
       }
@@ -37,8 +36,7 @@ export default class ParticipantEventsRouter {
 
     app.get(basePath + '/:participant' + searchPath + '/:event', async (req: Request, res: Response) => {
       try {
-        let result = await ParticipantEventsController.existEvent(req.params.participant, req.params.event);
-        res.status(result.code).send(result.body);
+        ParticipantEventsController.existEvent(req, res);
       } catch (err) {
         res.status(err.code).send(err.body)
       }
@@ -46,8 +44,7 @@ export default class ParticipantEventsRouter {
 
     app.put(basePath + accomplishedPath + "/:id", async (req: Request, res: Response) => {
       try {
-        let result = await ParticipantEventsController.accomplishedEvent(req.params.id);
-        res.status(result.code).send(result.body);
+        ParticipantEventsController.accomplishedEvent(req, res);
       } catch (err) {
         res.status(err.code).send(err.body)
       }
@@ -55,8 +52,7 @@ export default class ParticipantEventsRouter {
 
     app.put(basePath + discardActivityPath + "/:activityId", async (req: Request, res: Response) => {
       try {
-        let result = await ParticipantEventsController.discardEvent(req.params.activityId);
-        res.status(result.code).send(result.body);
+        ParticipantEventsController.discardEvent(req, res);
       } catch (err) {
         res.status(err.code).send(err.body)
       }
@@ -64,8 +60,7 @@ export default class ParticipantEventsRouter {
 
     app.get(basePath + listPath + '/:id', async (req: Request, res: Response) => {
       try {
-        let result = await ParticipantEventsController.listAll(req.params.id);
-        res.status(result.code).send(result.body);
+        ParticipantEventsController.listAll(req, res);
       } catch (err) {
         res.status(err.code).send(err.body)
       }
