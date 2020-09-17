@@ -54,6 +54,18 @@ export default class ParticipantEventsController {
       });
   }
 
+  static accomplishedEventByActivityId(req: Request, res: Response): void{
+    let activityId = req.params.activityId;
+    validateObjectId(activityId);
+    ParticipantEventsService.accomplishedEventByActivityId(new ObjectId(activityId))
+      .then(result => {
+        res.status(result.code).send(result.body)
+      })
+      .catch(err => res.status(err.code).send(err.body))
+
+
+  }
+
   static discardEvent(req: Request, res: Response): void {
     let activityId = req.params.activityId;
     validateObjectId(activityId);
@@ -77,7 +89,6 @@ export default class ParticipantEventsController {
         res.status(err.code).send(err.body)
       });
   }
-
 };
 
 function validateObjectId(id: string) {

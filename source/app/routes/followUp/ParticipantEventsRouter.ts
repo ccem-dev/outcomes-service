@@ -12,6 +12,7 @@ export default class ParticipantEventsRouter {
     let cancelPath: string = "/cancel";
     let listPath: string = "/listAll";
     let accomplishedPath: string = "/accomplished";
+    let accomplishedByActivityIdPath: string = "/accomplished/activity";
     let discardActivityPath: string = "/discarded/activity";
 
     app.post(basePath + startPath + '/:participant', async (req: Request, res: Response) => {
@@ -49,6 +50,14 @@ export default class ParticipantEventsRouter {
         res.status(err.code).send(err.body)
       }
     });
+
+    app.put(basePath + accomplishedByActivityIdPath + "/:activityId", async (req: Request, res: Response) => {
+      try {
+        ParticipantEventsController.accomplishedEventByActivityId(req, res);
+
+      } catch (err) {
+      }
+    })
 
     app.put(basePath + discardActivityPath + "/:activityId", async (req: Request, res: Response) => {
       try {
