@@ -61,9 +61,17 @@ export default class ParticipantEventsController {
       .then(result => {
         res.status(result.code).send(result.body)
       })
-      .catch(err => res.status(err.code).send(err.body))
+      .catch(err => res.status(err.code).send(err.body));
+  }
 
-
+  static reopenedEventByActivityId(req: Request, res: Response): void{
+    let activityId = req.params.activityId;
+    validateObjectId(activityId);
+    ParticipantEventsService.reopenedEventByActivityId(new ObjectId(activityId))
+      .then(result => {
+        res.status(result.code).send(result.body)
+      })
+      .catch(err => res.status(err.code).send(err.body));
   }
 
   static discardEvent(req: Request, res: Response): void {
@@ -89,6 +97,7 @@ export default class ParticipantEventsController {
         res.status(err.code).send(err.body)
       });
   }
+
 };
 
 function validateObjectId(id: string) {

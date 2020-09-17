@@ -78,6 +78,19 @@ export default class ParticipantEventsService {
 
   }
 
+
+  static async reopenedEventByActivityId(activityId: ObjectId): Promise<IResponse> {
+    let updateResult;
+    try {
+      updateResult = await ParticipantEventModel.updateOne({"activityId": activityId}, {"$set": {status: StatusEventsType.REOPENED}});
+    } catch (e) {
+      throw new InternalServerErrorResponse(e);
+    }
+
+    if (updateResult.n) return new SuccessResponse();
+    else throw new NotFoundResponse({message: "ParticipantEvent not found"});
+  }
+
   static async discardEvent(activityId: ObjectId): Promise<IResponse> {
     let updateResult;
 
@@ -110,6 +123,4 @@ export default class ParticipantEventsService {
       throw new NotFoundResponse({message: "ParticipantEvents not found"})
     }
   }
-
-
 };

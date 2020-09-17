@@ -13,6 +13,7 @@ export default class ParticipantEventsRouter {
     let listPath: string = "/listAll";
     let accomplishedPath: string = "/accomplished";
     let accomplishedByActivityIdPath: string = "/accomplished/activity";
+    let reopenedByActivityIdPath: string = "/reopened/activity";
     let discardActivityPath: string = "/discarded/activity";
 
     app.post(basePath + startPath + '/:participant', async (req: Request, res: Response) => {
@@ -54,8 +55,17 @@ export default class ParticipantEventsRouter {
     app.put(basePath + accomplishedByActivityIdPath + "/:activityId", async (req: Request, res: Response) => {
       try {
         ParticipantEventsController.accomplishedEventByActivityId(req, res);
-
       } catch (err) {
+        res.status(err.code).send(err.body)
+      }
+    })
+
+
+    app.put(basePath + reopenedByActivityIdPath + "/:activityId", async (req: Request, res: Response) => {
+      try {
+        ParticipantEventsController.reopenedEventByActivityId(req, res);
+      } catch (err) {
+        res.status(err.code).send(err.body)
       }
     })
 
