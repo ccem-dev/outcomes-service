@@ -68,11 +68,31 @@ ParticipantEventSchema.statics.getEventsByParticipant = async function (id: Obje
 
 ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
   let pendingEvents:Array<any> = [];
+  let reopenedEvents:Array<any> = [];
   let accomplishedEvents:Array<any> = [];
+
   pendingEvents = await this.collection.aggregate([
       {
         $match: {
           "status": StatusEventsType.PENDING,
+          "participant": id,
+          "activated": true,
+          "objectType": { $not: /ParticipantFollowUp/}
+        }
+      },
+      {
+        $sort: {
+          "date": 1
+        }
+      }
+    ]
+  ).toArray()
+
+
+  reopenedEvents = await this.collection.aggregate([
+      {
+        $match: {
+          "status": StatusEventsType.REOPENED,
           "participant": id,
           "activated": true,
           "objectType": { $not: /ParticipantFollowUp/}
@@ -102,7 +122,7 @@ ParticipantEventSchema.statics.listAll = async function (id: ObjectId) {
       }
     ]
   ).toArray()
-  let fullList:Array<any> = pendingEvents.concat(accomplishedEvents)
+  let fullList:Array<any> = pendingEvents.concat(reopenedEvents, accomplishedEvents)
   return fullList
 };
 
